@@ -14,7 +14,8 @@ public class Color {
     }
 
     static Color fromUint8Values(int r, int g, int b) {
-        return new Color((float) r / 255, (float) g / 255, (float) b / 255);
+        // The C++ reference divides palette channels in double precision.
+        return new Color((double) r / 255, (double) g / 255, (double) b / 255);
     }
 
     Color lighten(double t) {
@@ -26,7 +27,12 @@ public class Color {
     }
 
     double luminance() {
-        return Math.sqrt(Math.pow(0.299 * this.r, 2) + Math.pow(0.587 * this.g, 2) + Math.pow(0.114 * this.b, 2));
+        // Match the reference's powf(..., 2) and sqrtf: round the inputs,
+        // squared terms, sum, and result to float, preserving color ordering.
+        float red = (float)(0.299 * this.r);
+        float green = (float)(0.587 * this.g);
+        float blue = (float)(0.114 * this.b);
+        return (float)Math.sqrt(red * red + green * green + blue * blue);
     }
 
     Color burn(double t) {
