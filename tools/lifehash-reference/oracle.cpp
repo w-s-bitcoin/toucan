@@ -23,7 +23,7 @@ static void numeric_cases() {
         std::cout << "modulo " << pair[0] << " " << pair[1]
                   << " " << LifeHash::modulo(pair[0], pair[1]) << "\n";
     }
-    // After modulo and scaling, h is just below 5 but floorf rounds it to 5.
+    // After modulo and scaling, float argument conversion rounds h up to 5 before floorf.
     double hue = -1.0 / 6.0;
     auto color = LifeHash::HSBColor(hue).color();
     std::cout << "hsb " << hue << " " << color.r << " " << color.g << " " << color.b << "\n";

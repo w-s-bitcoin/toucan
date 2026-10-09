@@ -41,7 +41,7 @@ public class NumericReferenceTest {
                         assertBits(line, fields[3], actual);
                     }
                     case "hsb" -> {
-                        // floorf rounds h just below 5 to the next hue sector.
+                        // Float argument conversion rounds h up to 5 before floorf.
                         Color color = new HSBColor(Double.parseDouble(fields[1])).color();
                         assertBits(line, fields[2], color.r);
                         assertBits(line, fields[3], color.g);
