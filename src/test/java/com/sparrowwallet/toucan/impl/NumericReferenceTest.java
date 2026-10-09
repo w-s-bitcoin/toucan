@@ -40,12 +40,19 @@ public class NumericReferenceTest {
                         double actual = Utils.modulo(Double.parseDouble(fields[1]), Double.parseDouble(fields[2]));
                         assertBits(line, fields[3], actual);
                     }
+                    case "hsb" -> {
+                        // floorf rounds h just below 5 to the next hue sector.
+                        Color color = new HSBColor(Double.parseDouble(fields[1])).color();
+                        assertBits(line, fields[2], color.r);
+                        assertBits(line, fields[3], color.g);
+                        assertBits(line, fields[4], color.b);
+                    }
                     default -> throw new AssertionError("Unknown numeric fixture: " + fields[0]);
                 }
                 count++;
             }
         }
-        assertEquals("Truncated numeric reference fixture corpus", 11, count);
+        assertEquals("Truncated numeric reference fixture corpus", 12, count);
     }
 
     private static void assertBits(String context, String expected, double actual) {

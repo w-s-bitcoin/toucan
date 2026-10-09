@@ -12,6 +12,10 @@ import tempfile
 
 
 COMMIT = "0444dbed5615fbc9a98163608c6499c025b7873b"
+CPP_NUMERIC_FLAGS = ["-std=c++17", "-O3", "-ffp-contract=off"]
+# The pinned source omits these direct includes and otherwise fails to compile
+# with newer libstdc++. Supply declarations without modifying its source.
+CPP_HEADER_FLAGS = ["-include", "stdexcept", "-include", "cstring"]
 SEED = "SeedSigner LifeHash public test fingerprint "
 NAMED = ["73c5da0a", "a63dbf9c", "9a6087a6", "00000000", "ffffffff",
          "00000001", "00000100", "00010000", "01000000", "01234567",
@@ -79,14 +83,14 @@ def main():
     if args.count < 0:
         parser.error("--count must be non-negative")
     inputs = list(cases(args.seed, args.count))
-    print(f"Reference: bc-lifehash {COMMIT}; flags: -std=c++17 -O3 -ffp-contract=off", flush=True)
+    print(f"Reference: bc-lifehash {COMMIT}; flags: {' '.join(CPP_NUMERIC_FLAGS + CPP_HEADER_FLAGS)}", flush=True)
     print(f"Seed: {args.seed!r}; count: {args.count}; total cases: {len(inputs)}", flush=True)
 
     with tempfile.TemporaryDirectory(prefix="toucan-reference-") as temp:
         work = Path(temp)
         export_reference(args.reference, work)
         cpp = work / "oracle"
-        subprocess.run([args.cxx, "-std=c++17", "-O3", "-ffp-contract=off", "-I", str(work / "src"),
+        subprocess.run([args.cxx, *CPP_NUMERIC_FLAGS, *CPP_HEADER_FLAGS, "-I", str(work / "src"),
                         str(Path(__file__).with_name("oracle.cpp")),
                         *map(str, sorted((work / "src").glob("*.cpp"))), "-o", str(cpp)], check=True)
         classes = work / "classes"
@@ -112,7 +116,7 @@ def main():
                     process.kill()
                     process.wait()
 
-        fixtures = [f"# bc-lifehash {COMMIT}; -std=c++17 -O3 -ffp-contract=off\n",
+        fixtures = [f"# bc-lifehash {COMMIT}; {' '.join(CPP_NUMERIC_FLAGS)}\n",
                     f"# seed={ascii(args.seed)}; count={args.count}; see tools/lifehash-reference/README.md\n",
                     "# mode version module_size alpha input_hex width height sha256_of_pixel_bytes\n"]
         with outputs[0].open() as reference, outputs[1].open() as actual:

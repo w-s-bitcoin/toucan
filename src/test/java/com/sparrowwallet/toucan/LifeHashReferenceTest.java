@@ -47,9 +47,11 @@ public class LifeHashReferenceTest {
                     pixels[i] = image.colors().get(i);
                 }
                 assertEquals(context, fields[7], hex.formatHex(sha256.digest(pixels)));
-                // Verify the UI conversion preserves the independently checked
-                // channels for the varied API cases, without converting 4,111 icons.
-                if(count >= 4111) {
+                // Check UI conversion for the varied API cases, selected by their
+                // fields so fixture ordering and fingerprint sample count do not matter.
+                // The four-byte VERSION2 RGB profile is already covered by pixel hashes.
+                if(!fields[0].equals("data") || version != LifeHashVersion.VERSION2
+                        || moduleSize != 1 || alpha || input.length != 4) {
                     assertBufferedImage(context, image, pixels);
                 }
                 count++;

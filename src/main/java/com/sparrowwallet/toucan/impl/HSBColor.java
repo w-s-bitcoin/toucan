@@ -63,7 +63,8 @@ public class HSBColor {
                 h += 1;
             }
             h *= 6;
-            int i = (int) Math.floor(h);
+            // Match the C++ reference's floorf argument rounding before selecting the hue sector.
+            int i = (int) Math.floor((float) h);
             double f = h - i;
             double p = v * (1 - s);
             double q = v * (1 - s * f);
