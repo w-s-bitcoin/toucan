@@ -27,7 +27,9 @@ public class Utils {
     }
 
     public static double modulo(double dividend, double divisor) {
-        return dividend % divisor; //Math.IEEEremainder(Math.IEEEremainder(dividend, divisor) + divisor, divisor);
+        // Match C++ fmodf(fmodf(dividend, divisor) + divisor, divisor),
+        // including float argument rounding at both calls and double addition.
+        return (float)((float)dividend % (float)divisor + divisor) % (float)divisor;
     }
 
     private final static char[] hexArray = "0123456789abcdef".toCharArray();
